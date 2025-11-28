@@ -208,7 +208,7 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 	if err != nil {
 		klog.ErrorS(err, "Couldn't make a ref to pod", "pod", klog.KObj(pod), "containerName", container.Name)
 	}
-
+	// 拿到image的 sha256
 	imageRef, msg, err := m.imagePuller.EnsureImageExists(ctx, ref, pod, container.Image, pullSecrets, podSandboxConfig, podRuntimeHandler, container.ImagePullPolicy)
 	if err != nil {
 		s, _ := grpcstatus.FromError(err)

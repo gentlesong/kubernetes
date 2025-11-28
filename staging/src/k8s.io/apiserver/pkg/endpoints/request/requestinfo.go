@@ -133,7 +133,7 @@ func (r *RequestInfoFactory) NewRequestInfo(req *http.Request) (*RequestInfo, er
 		Path:              req.URL.Path,
 		Verb:              strings.ToLower(req.Method),
 	}
-
+	// 解析路径: /api/v1/namespaces/kube-system/pods
 	currentParts := splitPath(req.URL.Path)
 	if len(currentParts) < 3 {
 		// return a non-resource request
@@ -144,8 +144,8 @@ func (r *RequestInfoFactory) NewRequestInfo(req *http.Request) (*RequestInfo, er
 		// return a non-resource request
 		return &requestInfo, nil
 	}
-	requestInfo.APIPrefix = currentParts[0]
-	currentParts = currentParts[1:]
+	requestInfo.APIPrefix = currentParts[0] // currentParts now looks like: ["api","v1", "namespaces", "kube-system", "pods"]
+	currentParts = currentParts[1:]         // currentParts now looks like: ["v1", "namespaces", "kube-system", "pods"]
 
 	if !r.GrouplessAPIPrefixes.Has(requestInfo.APIPrefix) {
 		// one part (APIPrefix) has already been consumed, so this is actually "do we have four parts?"
@@ -159,8 +159,8 @@ func (r *RequestInfoFactory) NewRequestInfo(req *http.Request) (*RequestInfo, er
 	}
 
 	requestInfo.IsResourceRequest = true
-	requestInfo.APIVersion = currentParts[0]
-	currentParts = currentParts[1:]
+	requestInfo.APIVersion = currentParts[0] // "v1"
+	currentParts = currentParts[1:]          // currentParts now looks like: ["namespaces", "kube-system", "pods"]
 
 	// handle input of form /{specialVerb}/*
 	verbViaPathPrefix := false
